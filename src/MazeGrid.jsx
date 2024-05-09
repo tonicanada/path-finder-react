@@ -121,47 +121,35 @@ const directions = [
 ];
 
 // Función helper para manejar el retraso
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const dfs = async (maze, start, visited, end, updateMaze) => {
   console.log(start);
-  const newMaze = maze.map((row) => [...row]); // Crea una copia del laberinto para manipular
   const currentCell = maze[start[0]][start[1]];
 
-  
   if (currentCell != "start" && currentCell != "end") {
     maze[start[0]][start[1]] = "visited";
   }
-  updateMaze(newMaze);
+  updateMaze(maze);
 
-  await delay(100);  // Espera 100 ms antes de continuar
+  await delay(100); // Espera 100 ms antes de continuar
 
   if (start[0] === end[0] && start[1] === end[1]) {
     return true;
   }
 
   visited[start[0]][start[1]] = true;
-  for (let i = 0; i < maze.length; i++) {
-    for (let j = 0; j < directions.length; j++) {
-      let move = directions[j];
-      let newPosition = [start[0] + move[0], start[1] + move[1]];
-      let new_i = newPosition[0];
-      let new_j = newPosition[1];
-      if (new_i >= 0 && new_i < maze.length) {
-        if (new_j >= 0 && new_j < maze.length) {
-          if (!visited[new_i][new_j]) {
-            if (maze[new_i][new_j] != "wall") {
-              if (
-                await dfs(
-                  maze,
-                  [new_i, new_j],
-                  visited,
-                  end,
-                  updateMaze,
-                )
-              ) {
-                return true;
-              }
+  for (let j = 0; j < directions.length; j++) {
+    let move = directions[j];
+    let newPosition = [start[0] + move[0], start[1] + move[1]];
+    let new_i = newPosition[0];
+    let new_j = newPosition[1];
+    if (new_i >= 0 && new_i < maze.length) {
+      if (new_j >= 0 && new_j < maze.length) {
+        if (!visited[new_i][new_j]) {
+          if (maze[new_i][new_j] != "wall") {
+            if (await dfs(maze, [new_i, new_j], visited, end, updateMaze)) {
+              return true;
             }
           }
         }
@@ -169,6 +157,47 @@ const dfs = async (maze, start, visited, end, updateMaze) => {
     }
   }
   return false;
+};
+
+const bfs = async (maze, start, visited, end, updateMaze) => {
+  const queue = [start];
+  console.log(start)
+  console.log(queue)
+
+  while (queue.length !== 0) {
+    let current = queue.shift();
+    // visited[current[0]][current[1]] = true;
+
+    const currentCell = maze[current[0]][current[1]];
+
+    if (current[0] === end[0] && current[1] === end[1]) {
+      break;
+    }
+    if (currentCell != "start" && currentCell != "end") {
+      maze[current[0]][current[1]] = "visited";
+    }
+    updateMaze(maze);
+    await delay(100); // Espera 100 ms antes de continuar
+
+    for (let j = 0; j < directions.length; j++) {
+      let move = directions[j];
+      let newPosition = [current[0] + move[0], current[1] + move[1]];
+      let new_i = newPosition[0];
+      let new_j = newPosition[1];
+      if (new_i >= 0 && new_i < maze.length) {
+        if (new_j >= 0 && new_j < maze.length) {
+          if (!visited[new_i][new_j]) {
+            if (maze[new_i][new_j] != "wall") {
+              visited[new_i][new_j] = true;  // Marcar como visitado antes de encolar
+              queue.push(newPosition);
+            }
+          }
+        }
+      }
+    }
+
+  }
+  return true
 };
 
 function MazeGrid() {
@@ -179,11 +208,18 @@ function MazeGrid() {
     setMaze({ ...mazeDict, maze: newMaze });
   };
 
-  const handleSearchClick = async () => {
+  const handleSearchClickDfs = async () => {
     const visited = Array.from({ length: maze.length }, () =>
       Array(maze.length).fill(false)
     );
     await dfs(maze, start, visited, end, updateMaze);
+  };
+
+  const handleSearchClickBfs = async () => {
+    const visited = Array.from({ length: maze.length }, () =>
+      Array(maze.length).fill(false)
+    );
+    await bfs(maze, start, visited, end, updateMaze);
   };
 
   const regenerateMaze = () => {
@@ -194,7 +230,8 @@ function MazeGrid() {
     <div>
       {renderMaze(maze)}
       <button onClick={regenerateMaze}>Regenerar laberinto</button>
-      <button onClick={handleSearchClick}>Ejecutar DFS</button>
+      <button onClick={handleSearchClickDfs}>Ejecutar DFS</button>
+      <button onClick={handleSearchClickBfs}>Ejecutar BFS</button>
     </div>
   );
 }
