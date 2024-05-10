@@ -52,8 +52,6 @@ function generateMaze() {
 
   const current = [...start];
 
-  // console.log(moves);
-
   for (let i = 0; i < moves.length; i++) {
     const move = moves[i];
     // console.log("move", move);
@@ -124,7 +122,6 @@ const directions = [
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const dfs = async (maze, start, visited, end, updateMaze) => {
-  console.log(start);
   const currentCell = maze[start[0]][start[1]];
 
   if (currentCell != "start" && currentCell != "end") {
@@ -161,8 +158,6 @@ const dfs = async (maze, start, visited, end, updateMaze) => {
 
 const bfs = async (maze, start, visited, end, updateMaze) => {
   const queue = [start];
-  console.log(start);
-  console.log(queue);
 
   while (queue.length !== 0) {
     let current = queue.shift();
@@ -203,11 +198,11 @@ function clearMaze(maze, updateMaze) {
   for (let i = 0; i < maze.length; i++) {
     for (let j = 0; j < maze.length; j++) {
       if (maze[i][j] === "visited") {
-        maze[i][j] = "path"
+        maze[i][j] = "path";
       }
     }
   }
-  updateMaze(maze)
+  updateMaze(maze);
 }
 
 function MazeGrid() {
@@ -219,7 +214,7 @@ function MazeGrid() {
   };
 
   const handleSearchClickDfs = async () => {
-    clearMaze(maze, updateMaze)
+    clearMaze(maze, updateMaze);
     const visited = Array.from({ length: maze.length }, () =>
       Array(maze.length).fill(false)
     );
@@ -227,7 +222,7 @@ function MazeGrid() {
   };
 
   const handleSearchClickBfs = async () => {
-    clearMaze(maze, updateMaze)
+    clearMaze(maze, updateMaze);
     const visited = Array.from({ length: maze.length }, () =>
       Array(maze.length).fill(false)
     );
@@ -235,8 +230,8 @@ function MazeGrid() {
   };
 
   const handleSearchClickClearMaze = () => {
-    clearMaze(maze, updateMaze)
-  }
+    clearMaze(maze, up);
+  };
 
   const regenerateMaze = () => {
     setMaze(generateMaze()); // Generar y establecer un nuevo laberinto
