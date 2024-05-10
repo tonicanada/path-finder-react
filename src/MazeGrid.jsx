@@ -230,7 +230,7 @@ function MazeGrid() {
   };
 
   const handleSearchClickClearMaze = () => {
-    clearMaze(maze, up);
+    clearMaze(maze, updateMaze);
   };
 
   const regenerateMaze = () => {
