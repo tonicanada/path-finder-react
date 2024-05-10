@@ -161,8 +161,8 @@ const dfs = async (maze, start, visited, end, updateMaze) => {
 
 const bfs = async (maze, start, visited, end, updateMaze) => {
   const queue = [start];
-  console.log(start)
-  console.log(queue)
+  console.log(start);
+  console.log(queue);
 
   while (queue.length !== 0) {
     let current = queue.shift();
@@ -188,17 +188,27 @@ const bfs = async (maze, start, visited, end, updateMaze) => {
         if (new_j >= 0 && new_j < maze.length) {
           if (!visited[new_i][new_j]) {
             if (maze[new_i][new_j] != "wall") {
-              visited[new_i][new_j] = true;  // Marcar como visitado antes de encolar
+              visited[new_i][new_j] = true; // Marcar como visitado antes de encolar
               queue.push(newPosition);
             }
           }
         }
       }
     }
-
   }
-  return true
+  return true;
 };
+
+function clearMaze(maze, updateMaze) {
+  for (let i = 0; i < maze.length; i++) {
+    for (let j = 0; j < maze.length; j++) {
+      if (maze[i][j] === "visited") {
+        maze[i][j] = "path"
+      }
+    }
+  }
+  updateMaze(maze)
+}
 
 function MazeGrid() {
   const [mazeDict, setMaze] = useState(generateMaze());
@@ -209,6 +219,7 @@ function MazeGrid() {
   };
 
   const handleSearchClickDfs = async () => {
+    clearMaze(maze, updateMaze)
     const visited = Array.from({ length: maze.length }, () =>
       Array(maze.length).fill(false)
     );
@@ -216,11 +227,16 @@ function MazeGrid() {
   };
 
   const handleSearchClickBfs = async () => {
+    clearMaze(maze, updateMaze)
     const visited = Array.from({ length: maze.length }, () =>
       Array(maze.length).fill(false)
     );
     await bfs(maze, start, visited, end, updateMaze);
   };
+
+  const handleSearchClickClearMaze = () => {
+    clearMaze(maze, updateMaze)
+  }
 
   const regenerateMaze = () => {
     setMaze(generateMaze()); // Generar y establecer un nuevo laberinto
@@ -232,6 +248,7 @@ function MazeGrid() {
       <button onClick={regenerateMaze}>Regenerar laberinto</button>
       <button onClick={handleSearchClickDfs}>Ejecutar DFS</button>
       <button onClick={handleSearchClickBfs}>Ejecutar BFS</button>
+      <button onClick={handleSearchClickClearMaze}>Limpiar</button>
     </div>
   );
 }
